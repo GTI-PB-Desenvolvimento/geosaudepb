@@ -1,0 +1,23 @@
+name: Pipeline tests
+on: [push, pull_request]
+
+jobs:
+  validate_changes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy files
+        uses: actions/checkout@v4
+
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install poetry
+        run: pip install poetry
+
+      - name: Install deps
+        run: poetry install
+
+      - name: Run tests
+        run: poetry run task test

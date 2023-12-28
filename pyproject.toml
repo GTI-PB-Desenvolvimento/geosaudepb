@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "geosaudepb"
+version = "0.1.0"
+description = "Dados geográficos voltados para área de saúde da Paraíba"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "geosaudepb", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+taskipy = "^1.12.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+
+[tool.taskipy.tasks]
+test = 'pytest .'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
