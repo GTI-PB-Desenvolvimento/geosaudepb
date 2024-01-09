@@ -10,10 +10,10 @@ class _Base:
 
     @classmethod
     def get_data(cls):
-        csv_url = cls._data_url + cls.json_name
+        json_url = cls._data_url + cls.json_name
 
         if not cls._data:
-            response = urlopen(csv_url)
+            response = urlopen(json_url)
             if not response.status == 200:
                 raise ConnectionError
 
@@ -25,7 +25,7 @@ class _Base:
 
 
 class Macroregiao(_Base):
-    csv_name = 'macroregioes.json'
+    json_name = 'macroregioes.json'
 
     def __init__(self, id: str):
         self.nome = self.get_data()[id]
@@ -37,4 +37,7 @@ class Macroregiao(_Base):
 
     @classmethod
     def get_all(cls) -> Generator:
-        return (cls(macro_id) for macro_id in cls._data.keys())
+        return (cls(macro_id) for macro_id in cls.get_data().keys())
+
+    def __repr__(self) -> str:
+        return f'<Macroregiao id="{self.id}", nome="{self.nome}" >'
