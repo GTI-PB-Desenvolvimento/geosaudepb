@@ -1,24 +1,40 @@
-from abc import ABC, abstractmethod
-from typing import List, Any
+import json
+from typing import Generator
+from urllib.request import urlopen
 
-from .data import PBData
 
+class _Base:
+    _data: dict = {}
+    _data_url: str = 'https://raw.githubusercontent.com/GTI-PB-Desenvolvimento/geosaudepb/main/data/'
+    json_name: str = ''
 
-class _Base(ABC):
-    @abstractmethod
-    def get_all() -> List[Any]:
-        pass
+    @classmethod
+    def get_data(cls):
+        csv_url = cls._data_url + cls.json_name
 
-    @abstractmethod
-    def get():
-        pass
+        if not cls._data:
+            response = urlopen(csv_url)
+            if not response.status == 200:
+                raise ConnectionError
+
+            json_text = response.read()
+            cls._data = json.loads(json_text.decode('utf-8'))
+
+        return cls._data
+
 
 
 class Macroregiao(_Base):
-    @staticmethod
-    def get_all() -> List[str]:
-        return list(PBData.data.keys())
+    csv_name = 'macroregioes.json'
 
-    @staticmethod
-    def get(macro) -> dict:
-        return PBData.data[macro]
+    def __init__(self, id: str):
+        self.nome = self.get_data()[id]
+        self.id = id
+
+    @property
+    def gerencias(self) -> Generator:
+        pass
+
+    @classmethod
+    def get_all(cls) -> Generator:
+        return (cls(macro_id) for macro_id in cls._data.keys())
