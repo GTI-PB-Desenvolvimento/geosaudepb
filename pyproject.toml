@@ -9,10 +9,10 @@ packages = [{ include = "geosaudepb", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-taskipy = "^1.12.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
+taskipy = "^1.12.2"
 
 [tool.taskipy.tasks]
 test = 'pytest .'
