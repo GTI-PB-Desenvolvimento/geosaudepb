@@ -4,11 +4,11 @@ from geosaudepb.pb import Macroregiao
 def test_all_macrorregiao():
     macrorregioes = Macroregiao.get_all()
 
-    assert type(macrorregioes) is list
-    assert len(macrorregioes) > 0
+    assert type(next(macrorregioes)) is Macroregiao
 
 def test_get_macrorregiao():
-    macro_1 = Macroregiao.get('1ª Macro')
+    macro_1 = Macroregiao('1')
 
-    assert type(macro_1) is dict
-    assert len(macro_1.keys()) > 0
+    assert type(macro_1) is Macroregiao
+    assert macro_1.id == '1'
+    assert macro_1.nome == '1ª Macro'
