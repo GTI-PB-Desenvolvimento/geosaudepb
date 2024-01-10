@@ -13,7 +13,7 @@ def test_get_macrorregiao():
     assert type(macro) is Macroregiao
     assert macro.id == '1'
     assert macro.nome == '1ª Macro'
-    assert len([*macro.gerencias]) == 3
+    assert next(macro.gerencias).macrorregiao.id == '1'
 
 
 def test_all_gerencias():
@@ -28,6 +28,7 @@ def test_get_gerencia():
     assert gerencia.id == '1'
     assert gerencia.nome == '1ª Gerência'
     assert gerencia.macrorregiao.id == '1'
+    assert next(gerencia.municipios).gerencia.id == '1'
 
 
 def test_all_municipios():
