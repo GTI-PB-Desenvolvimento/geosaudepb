@@ -23,6 +23,10 @@ class _Base:
         return cls._data
 
 
+class MuniciopioNotFound(Exception):
+    ...
+
+
 class Macroregiao(_Base):
     json_name = 'macroregioes.json'
 
@@ -54,7 +58,7 @@ class Gerencia(_Base):
 
     @property
     def municipios(self) -> Generator:
-        pass
+        return (municipio for municipio in Municipio.get_all() if municipio.gerencia.id == self.id)
 
     @classmethod
     def get_all(cls) -> Generator:
@@ -63,3 +67,36 @@ class Gerencia(_Base):
     def __repr__(self) -> str:
         return f'<{self.__class__.__name__} id="{self.id}", nome="{self.nome}" >'
 
+
+class Municipio(_Base):
+    json_name = 'municipios.json'
+
+    def __init__(self, **kwargs):
+        municipio_id, municipio = self._get_municipio(**kwargs)
+
+        self.id = municipio_id
+        self.nome = municipio['nome']
+        self.ibge = municipio['ibge']
+        self.gerencia = Gerencia(municipio['gerencia_id'])
+        
+    def _get_municipio(self, **kwargs):
+        if id := kwargs.get('id'):
+            return id, self.get_data()[id]
+
+        ibge, nome = kwargs.get('ibge'), kwargs.get('nome')
+        if ibge or nome:
+            for municipio_id, municipio in self.get_data().items():
+                if municipio['ibge'] == ibge:
+                    return municipio_id, municipio
+
+                if municipio['nome'] == nome:
+                    return municipio_id, municipio
+
+        raise MuniciopioNotFound
+
+    @classmethod
+    def get_all(cls) -> Generator:
+        return (cls(id=municipio_id) for municipio_id in cls.get_data().keys())
+
+    def __repr__(self) -> str:
+        return f'<{self.__class__.__name__} id="{self.id}", nome="{self.nome}" >'
