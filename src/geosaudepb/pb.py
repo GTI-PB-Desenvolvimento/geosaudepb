@@ -26,6 +26,9 @@ class _Base:
 class MuniciopioNotFound(Exception):
     ...
 
+class UnidadeNotFound(Exception):
+    ...
+
 
 class Macroregiao(_Base):
     json_name = 'macroregioes.json'
@@ -86,13 +89,14 @@ class Municipio(_Base):
         ibge, nome = kwargs.get('ibge'), kwargs.get('nome')
         if ibge or nome:
             for municipio_id, municipio in self.get_data().items():
-                if municipio['ibge'] == ibge:
-                    return municipio_id, municipio
-
-                if municipio['nome'] == nome:
+                if municipio['ibge'] == ibge or municipio['nome'] == nome:
                     return municipio_id, municipio
 
         raise MuniciopioNotFound
+
+    @property
+    def unidades_saude(self) -> Generator:
+        return (unidade for unidade in UnidadeSaude.get_all() if unidade.municipio.id == self.id)
 
     @classmethod
     def get_all(cls) -> Generator:
@@ -100,3 +104,35 @@ class Municipio(_Base):
 
     def __repr__(self) -> str:
         return f'<{self.__class__.__name__} id="{self.id}", nome="{self.nome}" >'
+
+
+class UnidadeSaude(_Base):
+    json_name = 'unidade_saude.json'
+
+    def __init__(self, **kwargs):
+        unidade_id, unidade = self._get_unidade(**kwargs)
+
+        self.id = unidade_id
+        self.nome = unidade['nome']
+        self.cnes = unidade['cnes']
+        self.municipio = Municipio(id=unidade['municipio_id'])
+
+    def _get_unidade(self, **kwargs):
+        if id := kwargs.get('id'):
+            return id, self.get_data()[id]
+        
+        cnes, nome = kwargs.get('cnes'), kwargs.get('nome')
+        if cnes or nome:
+            for unidade_id, unidade in self.get_data().items():
+                if unidade['cnes'] == cnes or unidade['nome'] == nome:
+                    return unidade_id, unidade
+
+        raise UnidadeNotFound
+
+    @classmethod
+    def get_all(cls) -> Generator:
+        return (cls(id=unidade_id) for unidade_id in cls.get_data().keys())
+
+    def __repr__(self) -> str:
+        return f'<{self.__class__.__name__} id="{self.id}", nome="{self.nome}" >'
+
