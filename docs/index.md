@@ -1,5 +1,3 @@
-# GeoSaudePB
+# Paraíba
 
-## Paraíba
-
-- [Macrorregiões](docs/pb/macrorregiao.md)
+- [Macrorregiões](pb/macrorregiao.md)
