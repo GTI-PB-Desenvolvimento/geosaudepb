@@ -2,4 +2,4 @@
 
 ## Paraíba
 
-- (Macrorregiões)[docs/pb/macrorregiao.md]
+- [Macrorregiões](docs/pb/macrorregiao.md)
